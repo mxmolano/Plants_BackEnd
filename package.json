@@ -1,0 +1,36 @@
+{
+  "name": "2.code_node",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "nodemon src/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "1. Agregar al .env las nuevas variables de entorno\r - DB_HOST=localhost\r - DB_PORT=3306\r - DB_USER=root\r - DB_PASSWORD=\r - DB_NAME=patterns_class\r 2. **Cofigurar mysql***\r  - npm install typeorm mysql2\r 3. vamos a environment-vars.ts y reconfiguramos el archivo con las nuevas variables de entorno\r 4. Reorganización del proyecto en la arquitectura hexagonal\r 5. Descomentamos en el tsconfig.ts las siguientes opciones:\r  -  \"experimentalDecorators\": true,\r  -  \"emitDecoratorMetadata\": true,",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.0",
+    "express": "^5.1.0",
+    "joi": "^17.13.3",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.14.2",
+    "pg": "^8.16.3",
+    "run": "^1.5.0",
+    "ts-node": "^10.9.2",
+    "tsc": "^2.0.4",
+    "typeorm": "^0.3.25"
+  },
+  
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.19",
+    "@types/jsonwebtoken": "^9.0.10",
+    "nodemon": "^3.1.10"
+  }
+}
