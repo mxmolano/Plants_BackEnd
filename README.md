@@ -1,15 +1,25 @@
+¡Perfecto! 😄 Te preparé una **versión final completa del README**, lista para tu proyecto, que incluye **Domains, Ports, ApplicationServices**, instalación, stack, características, y con la lógica de negocio bien explicada. Además agregué una sección final con **diagramas ASCII simples** para mostrar la relación entre capas, manteniendo todo profesional y legible.
+
+---
+
 # 🌱 Mi Huerta - Backend
 
-Backend desarrollado en Node.js + Express + TypeScript con arquitectura hexagonal.
+Backend desarrollado en **Node.js + Express + TypeScript** con **arquitectura hexagonal**, para gestionar usuarios, plantas, cultivos, etapas, tareas y notificaciones.
+
+---
 
 ## 🚀 Características
-- Autenticación JWT
-- PostgreSQL
-- Gestión de usuarios, plantas, cultivos, etapas, tareas y notificaciones
-- Arquitectura hexagonal
-- Soporte para despliegue con Docker
+
+* Autenticación **JWT**.
+* Base de datos **PostgreSQL**.
+* Gestión completa de **usuarios, plantas, cultivos, tareas, etapas y notificaciones**.
+* **Arquitectura hexagonal** con separación de capas (**domain**, **application**, **infrastructure**).
+* Soporte para **despliegue con Docker**.
+
+---
 
 ## 🔧 Instalación
+
 ```bash
 git clone https://github.com/tuusuario/mi-huerta-backend.git
 cd mi-huerta-backend
@@ -18,119 +28,309 @@ cp .env
 npm run dev
 ```
 
+---
+
 ## 📦 Stack
-- Node.js + Express
-- TypeScript
-- PostgreSQL
-- JWT (autenticación)
-- Docker (opcional)
 
-# 🌱 Resumen de Ports y Lógica de Negocio
-
-## 👤 UsuarioPort
-**Métodos**
-- `createUsuario(usuario)` → Crea un nuevo usuario (admin o normal).
-- `updateUsuario(id_usuario, usuario)` → Actualiza datos del usuario.
-- `deleteUsuario(id_usuario)` → Desactiva un usuario (borrado lógico).
-- `getUsuarioById(id_usuario)` → Consulta un usuario puntual.
-- `getAllUsuario()` → Lista todos los usuarios.
-- `getUsuarioByEmail(email)` → Consulta un usuario por email (para login).
-- `getRolById(id_rol)` → Consulta el rol asignado a un usuario.
-
-**Lógica de negocio**
-- Maneja cuentas y roles.
-- Solo admin puede asignar o cambiar roles.
-- Base para autenticación (aunque el JWT vive en application).
+* **Node.js + Express**
+* **TypeScript**
+* **PostgreSQL**
+* **JWT** (autenticación)
+* **Docker** (opcional)
 
 ---
 
-## 🌿 PlantaPort
-**Métodos**
-- `createPlanta(planta)` → Crea una planta en la biblioteca (solo admin).
-- `updatePlanta(id_planta, planta)` → Actualiza datos de la planta.
-- `deactivatePlanta(id_planta)` → Desactiva una planta (soft delete).
-- `getPlantaById(id_planta)` → Consulta una planta puntual.
-- `getAllPlantas()` → Lista todas las plantas.
+# 🌱 Resumen de Domains y Ports
 
-**Lógica de negocio**
-- Biblioteca de plantas mantenida por admin.
-- Plantas sirven como plantilla base para nuevos cultivos.
-- Define condiciones ambientales, siembra, cosecha, asociaciones y plagas.
+Cada **Domain** define la estructura de datos y reglas de negocio fundamentales.
+Cada **Port** define la interfaz para acceder a esos datos, permitiendo que los **ApplicationServices** sean independientes de la infraestructura.
 
 ---
 
-## 🌾 CultivoPort
-**Métodos**
-- `createCultivo(cultivo)` → Crea un cultivo para un usuario a partir de una planta.  
-  (Debe disparar la creación automática de EtapaCultivo).
-- `updateCultivo(id_cultivo, cultivo)` → Actualiza datos del cultivo (ej: nombre personalizado).
-- `deleteCultivo(id_cultivo)` → Desactiva un cultivo (soft delete).
-- `getCultivoById(id_cultivo)` → Consulta un cultivo puntual.
-- `getUserCultivos(id_usuario)` → Lista cultivos de un usuario.
-- *(Opcional)* `getAllCultivos()` → Lista todos los cultivos (solo admin/reportes).
+## 👤 Usuario (Domain + Port)
 
-**Lógica de negocio**
-- Relaciona usuarios con plantas.
-- Permite personalizar nombre y llevar seguimiento del cultivo.
-- Al crear un cultivo, genera sus etapas (EtapaCultivo).
+**Domain:**
 
----
+* `Usuario`: nombre, email, contraseña, estado, rol.
+* `Rol`: tipo de usuario (admin o usuario normal).
 
-## ⏳ EtapaPort (Admin)
-**Métodos**
-- `getEtapasByPlanta(id_planta)` → Obtiene todas las etapas de una planta.
-- `createEtapa(etapa)` → Crea una nueva etapa en la definición de la planta.
-- `updateEtapa(id_etapa, etapa)` → Actualiza duración, nombre u orden de una etapa.
-- `deleteEtapa(id_etapa)` → Elimina una etapa de la planta.
+**Port:** `UsuarioPort`
 
-**Lógica de negocio**
-- Define el ciclo de vida teórico de cada planta.
-- Solo admin puede gestionarlas.
-- Base para generar las EtapaCultivo de los usuarios.
+* Métodos: `createUsuario`, `updateUsuario`, `deleteUsuario`, `getUsuarioById`, `getAllUsuario`, `getUsuarioByEmail`, `getRolById`.
+
+**Lógica de negocio:**
+
+* Admin controla la creación, actualización y asignación de roles.
+* Base para autenticación mediante JWT.
+* Seguridad de contraseñas con bcrypt.
+* Validaciones de existencia antes de actualizar o eliminar.
 
 ---
 
-## ⏳ EtapaCultivoPort (Usuario)
-**Métodos**
-- `createEtapasFromPlanta(id_cultivo, id_planta)` → Copia las etapas de la planta hacia el cultivo (se usa al crear un cultivo).
-- `getEtapasByCultivo(id_cultivo)` → Lista las etapas de un cultivo (timeline).
-- `getEtapaCultivoById(id_cultivo_etapa)` → Consulta una etapa puntual.
-- `updateEtapaCultivo(id_cultivo_etapa, etapaCultivo)` → Actualiza el estado o fechas de una etapa (pendiente, en-progreso, completada).
+## 🌿 Planta (Domain + Port)
 
-**Lógica de negocio**
-- Representa el ciclo real de un cultivo.
-- Usuario solo actualiza progreso y fechas reales.
-- No se crean ni borran manualmente.
+**Domain:**
 
----
+* `Planta`: nombre, nombre científico, descripción, siembra, cosecha, asociaciones y plagas.
+* Referencias: climas, tipos de cultivo, temporadas, epocas, luz solar, resistencias al frío, contenedores, plagas y cultivos asociados.
 
-## 📋 TareaPort
-**Métodos**
-- `createTarea(tarea)` → Crea una nueva tarea para un cultivo.
-- `updateTarea(id_tarea, tarea)` → Actualiza tarea (ej: marcar completada, cambiar fecha).
-- `deleteTarea(id_tarea)` → Desactiva tarea (soft delete).
-- `getTareaById(id_tarea)` → Consulta una tarea puntual.
-- `getCultivoTareas(id_cultivo)` → Lista todas las tareas de un cultivo.
-- *(Opcional)* `getTareasByFecha(fecha)` → Lista tareas programadas para una fecha.
+**Port:**
 
-**Lógica de negocio**
-- Manejo de actividades de cuidado de un cultivo.
-- Permite recordatorios y seguimiento de acciones (riego, fertilización, etc.).
-- Se conecta con notificaciones.
+* `PlantaPort`: CRUD de plantas.
+* `ReferenciaPort`: Consultas de referencias (climas, tipos, plagas, contenedores).
+
+**Lógica de negocio:**
+
+* Solo admin puede crear, actualizar o desactivar plantas.
+* Biblioteca base para cultivos de usuarios.
+* Contiene toda la información de siembra, cosecha y mantenimiento.
 
 ---
 
-## 🔔 NotificacionPort
-**Métodos**
-- `createNotificacion(notificacion)` → Crea una notificación para un usuario.
-- `markAsRead(id_notificacion)` → Marca una notificación como leída.
-- *(Opcional)* `markAllAsRead(id_usuario)` → Marca todas las notificaciones de un usuario como leídas.
-- `deleteNotificacion(id_notificacion)` → Desactiva notificación (soft delete).
-- `getUserNotificaciones(id_usuario, onlyUnread?)` → Lista notificaciones de un usuario (con filtro de no leídas).
+## 🌾 Cultivo (Domain + Port)
 
-**Lógica de negocio**
-- Mantiene informados a los usuarios sobre etapas, tareas y alertas.
-- Base para la UX: notificaciones clicables con enlaces.
-- Puede usarse para recordatorios automáticos.
+**Domain:**
+
+* `Cultivo`: Relación usuario-planta con nombre personalizado, fecha de inicio y estado.
+
+**Port:** `CultivoPort`
+
+* CRUD de cultivos y consultas por usuario.
+
+**Lógica de negocio:**
+
+* Permite seguimiento completo del ciclo del cultivo.
+* Al crear un cultivo, se generan automáticamente las etapas (`EtapaCultivo`).
+* Valida fechas y personalización de nombre.
 
 ---
+
+## ⏳ Etapa (Domain + Port)
+
+**Domain:**
+
+* `Etapa`: Fases teóricas de crecimiento de la planta: nombre, duración y orden.
+
+**Port:** `EtapaPort`
+
+* CRUD de etapas: `getEtapasByPlanta`, `createEtapa`, `updateEtapa`, `deleteEtapa`.
+
+**Lógica de negocio:**
+
+* Solo admin puede gestionar etapas.
+* Sirve como base para generar etapas reales (`EtapaCultivo`).
+
+---
+
+## ⏳ EtapaCultivo (Domain + Port)
+
+**Domain:**
+
+* `EtapaCultivo`: Etapa real de un cultivo con fechas, estado y progreso.
+
+**Port:** `EtapaCultivoPort`
+
+* Métodos: `createEtapasFromPlanta`, `getEtapasByCultivo`, `getEtapaCultivoById`, `updateEtapaCultivo`.
+
+**Lógica de negocio:**
+
+* Usuario solo actualiza estado y fechas reales.
+* No se crean ni eliminan manualmente.
+* Representa el ciclo real del cultivo.
+
+---
+
+## 📋 Tarea (Domain + Port)
+
+**Domain:**
+
+* `Tarea`: Actividades de cuidado de cultivo con título, descripción, fecha programada, estado y completada.
+
+**Port:** `TareaPort`
+
+* CRUD y consultas: `createTarea`, `updateTarea`, `deleteTarea`, `getTareaById`, `getCultivoTareas`, `getTareasByFecha`.
+
+**Lógica de negocio:**
+
+* Permite gestionar riego, fertilización, mantenimiento y recordatorios.
+* Conexión con notificaciones.
+* Validación de fechas programadas antes de crear o actualizar.
+
+---
+
+## 🔔 Notificación (Domain + Port)
+
+**Domain:**
+
+* `Notificacion`: Mensajes para usuarios con texto, tipo, enlace, estado y visto.
+
+**Port:** `NotificacionPort`
+
+* CRUD y consultas: `createNotificacion`, `markAsRead`, `markAllAsRead`, `deleteNotificacion`, `getUserNotificaciones`.
+
+**Lógica de negocio:**
+
+* Mantiene a los usuarios informados sobre etapas, tareas y alertas.
+* Permite marcar como leídas individual o todas.
+* Base para UX de notificaciones clicables.
+
+---
+
+# 📝 Resumen de ApplicationServices
+
+Cada ApplicationService aplica la **lógica de negocio** usando los ports:
+
+* Validación de existencia antes de `update`/`delete`.
+* `throw new Error` si no existe el recurso.
+* Logs `[CREATE]`, `[UPDATE]`, `[DELETE]`, `[GET]`.
+* Independientes de infraestructura (DB/HTTP).
+
+---
+
+### 1️⃣ UsuarioApplicationService
+
+* Gestiona usuarios, roles y autenticación.
+* Métodos: `login`, `createUsuario`, `updateUsuario`, `deleteUsuario`, `getUsuarioById`, `getUsuarioByEmail`, `getAllUsuarios`.
+* Admin puede asignar roles.
+* Seguridad con bcrypt y JWT.
+* Validaciones de existencia y logs.
+
+---
+
+### 2️⃣ PlantaApplicationService
+
+* Administra biblioteca de plantas y sus referencias.
+* Métodos: `createPlanta`, `updatePlanta`, `deactivatePlanta`, `getPlantaById`, `getPlantasByName`, `getAllPlantas`, `getReferenciasCompletas`.
+* Solo admin puede modificar plantas.
+* Permite consultar referencias de climas, tipos de cultivo, plagas y contenedores.
+
+---
+
+### 3️⃣ CultivoApplicationService
+
+* Gestiona cultivos de usuarios y seguimiento.
+* Métodos: `createCultivo`, `updateCultivo`, `deleteCultivoById`, `getCultivoById`, `getUserCultivos`.
+* Valida fechas y genera automáticamente las etapas (`EtapaCultivo`).
+
+---
+
+### 4️⃣ EtapaApplicationService
+
+* Gestiona ciclo teórico de plantas.
+* Métodos: `createEtapa`, `updateEtapa`, `deleteEtapa`, `getEtapasByPlanta`.
+* Base para generar etapas reales de los cultivos (`EtapaCultivo`).
+
+---
+
+### 5️⃣ EtapaCultivoApplicationService
+
+* Representa ciclo real del cultivo del usuario.
+* Métodos: `createEtapasFromPlanta`, `updateEtapaCultivo`, `deleteEtapaCultivoById`, `getEtapaCultivoById`, `getEtapasByCultivo`.
+* Usuario solo actualiza estado y fechas.
+
+---
+
+### 6️⃣ TareaApplicationService
+
+* Gestiona tareas de cuidado del cultivo.
+* Métodos: `createTarea`, `updateTarea`, `deleteTareaById`, `getTareaById`, `getCultivoTareas`, `getTareasByFecha`.
+* Valida fecha programada antes de crear o actualizar.
+* Se conecta con notificaciones para recordatorios.
+
+---
+
+### 7️⃣ NotificacionApplicationService
+
+* Mantiene informado al usuario sobre tareas, etapas y alertas.
+* Métodos: `createNotificacion`, `markAsRead`, `markAllAsRead`, `deleteNotificacion`, `getUserNotificaciones`.
+* Validaciones de existencia filtrando array devuelto por `getUserNotificaciones`.
+* Logs consistentes para seguimiento.
+
+---
+
+## ✅ Resumen general
+
+* Todos los ApplicationServices siguen el patrón de la profesora (`UserApplicationService`).
+* Validaciones antes de update/delete con `throw new Error`.
+* Logs `[CREATE]`, `[UPDATE]`, `[DELETE]`, `[GET]`.
+* Arquitectura hexagonal respetada.
+* Ports de Etapa y Notificación se mantienen intactos para evitar errores.
+
+---
+
+## 🗂 Diagrama de Arquitectura (ASCII)
+
+``` mermaid
+graph TD
+    subgraph Domain
+        Usuario[Usuario]
+        Rol[Rol]
+        Planta[Planta]
+        Referencias[Referencias]
+        Cultivo[Cultivo]
+        Etapa[Etapa]
+        EtapaCultivo[EtapaCultivo]
+        Tarea[Tarea]
+        Notificacion[Notificación]
+    end
+
+    subgraph Ports
+        UsuarioPort[UsuarioPort]
+        PlantaPort[PlantaPort]
+        ReferenciaPort[ReferenciaPort]
+        CultivoPort[CultivoPort]
+        EtapaPort[EtapaPort]
+        EtapaCultivoPort[EtapaCultivoPort]
+        TareaPort[TareaPort]
+        NotificacionPort[NotificacionPort]
+    end
+
+    subgraph ApplicationService
+        UsuarioApp[UsuarioApplicationService]
+        PlantaApp[PlantaApplicationService]
+        CultivoApp[CultivoApplicationService]
+        EtapaApp[EtapaApplicationService]
+        EtapaCultivoApp[EtapaCultivoApplicationService]
+        TareaApp[TareaApplicationService]
+        NotificacionApp[NotificacionApplicationService]
+    end
+
+    subgraph Infrastructure
+        DB[(PostgreSQL)]
+        Repositorios[Repositorios]
+        API[API REST / Controllers]
+    end
+
+    %% Relaciones Domain -> Ports
+    Usuario --> UsuarioPort
+    Rol --> UsuarioPort
+    Planta --> PlantaPort
+    Referencias --> ReferenciaPort
+    Cultivo --> CultivoPort
+    Etapa --> EtapaPort
+    EtapaCultivo --> EtapaCultivoPort
+    Tarea --> TareaPort
+    Notificacion --> NotificacionPort
+
+    %% Relaciones Ports -> Application
+    UsuarioPort --> UsuarioApp
+    PlantaPort --> PlantaApp
+    ReferenciaPort --> PlantaApp
+    CultivoPort --> CultivoApp
+    EtapaPort --> EtapaApp
+    EtapaCultivoPort --> EtapaCultivoApp
+    TareaPort --> TareaApp
+    NotificacionPort --> NotificacionApp
+
+    %% Relaciones Application -> Infrastructure
+    UsuarioApp --> Repositorios
+    PlantaApp --> Repositorios
+    CultivoApp --> Repositorios
+    EtapaApp --> Repositorios
+    EtapaCultivoApp --> Repositorios
+    TareaApp --> Repositorios
+    NotificacionApp --> Repositorios
+
+    Repositorios --> DB
+    API --> ApplicationService
+```
