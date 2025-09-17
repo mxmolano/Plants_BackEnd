@@ -15,4 +15,5 @@ export interface UsuarioPort {
     // Roles (solo consulta y asignación)
     getRolById(id_rol: number): Promise<Rol | null>;
     assignRol(id_usuario: number, id_rol: number): Promise<boolean>; // admin -> usuario o usuario -> admin
+    changeUserRole(id_usuario: number, id_rol: number): Promise<boolean>;
 }

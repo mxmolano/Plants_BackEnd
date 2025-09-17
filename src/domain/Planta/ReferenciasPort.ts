@@ -1,3 +1,16 @@
+// Exportar todos los tipos de referencia
+export { Clima } from './Referencia/Clima';
+export { CultivoAsociado } from './Referencia/CultivoAsociado';
+export { Epoca } from './Referencia/Epoca';
+export { LuzSolar } from './Referencia/LuzSolar';
+export { Plaga } from './Referencia/Plaga';
+export { ResistenciaFrio } from './Referencia/ResistenciaFrio';
+export { Temporada } from './Referencia/Temporada';
+export { TipoContenedor } from './Referencia/TipoContenedor';
+export { TipoCultivo } from './Referencia/TipoCultivo';
+export { TipoSiembra } from './Referencia/TipoSiembra';
+
+// Interfaz del puerto de referencias
 import { Clima } from './Referencia/Clima';
 import { CultivoAsociado } from './Referencia/CultivoAsociado';
 import { Epoca } from './Referencia/Epoca';
